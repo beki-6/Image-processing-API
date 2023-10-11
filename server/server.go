@@ -1,11 +1,14 @@
 package server
 
 import (
-	"database/sql"
+	"context"
 	"log"
 	"storage-api/controllers"
 	"storage-api/repositories"
 	"storage-api/services"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -17,8 +20,21 @@ type HttpServer struct {
 	imageController *controllers.ImageController
 }
 
-func InitHttpServer(config *viper.Viper, dbHandler *sql.DB) HttpServer {
-	imageRepo := repositories.NewImageRepo(dbHandler)
+func InitDatabase(config *viper.Viper) *mongo.Client {
+	// Set MongoDB connection options
+	clientOptions := options.Client().ApplyURI(config.GetString("database.connection_string"))
+
+	// Create a new MongoDB client
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		// Handle connection error
+		log.Fatalln(err)
+	}
+	return client
+}
+
+func InitHttpServer(config *viper.Viper, client *mongo.Client) HttpServer {
+	imageRepo := repositories.NewMongoDBUserRepository(client)
 	imageService := services.NewImageService(imageRepo)
 	imageController := controllers.NewImageController(imageService)
 
