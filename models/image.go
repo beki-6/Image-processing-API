@@ -1,9 +1,12 @@
 package models
 
+import "go.mongodb.org/mongo-driver/bson/primitive"
+
 type Image struct {
-	ID       string   `json:"id"`
-	Data     []byte   `json:"data"`
-	Metadata Metadata `json:"metadata,omitempty"`
+	ID       string             `json:"id" bson:"-"`
+	ObjectID primitive.ObjectID `json:"-" bson:"_id"`
+	Data     []byte             `json:"data"`
+	Metadata Metadata           `json:"metadata,omitempty"`
 }
 
 type ImageData struct {

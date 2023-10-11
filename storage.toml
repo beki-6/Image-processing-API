@@ -2,5 +2,4 @@
 address = ":8080"
 
 [database]
-connection_string = "host=localhost port=5432 user=bereket password=dandelions dbname=lakipay_db sslmode=disable"
-driver = "postgres"
+connection_string = "mongodb://localhost:27017"
